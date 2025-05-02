@@ -241,3 +241,70 @@ flux get helmreleases
 > [!NOTE]
 > From now on, the Flux Operator will be automatically upgraded, 
 > which in turn will upgrade the Flux controllers to the latest version.
+
+## Commit Status Configuration
+
+To know when a change in Git has been reconciled on the cluster, Flux can be configured
+to update the status of the commit in GitHub.
+
+Create a Flux `Alert` and `Provider` in `clusters/dev/flux-system/flux-notifications.yaml` with the following content:
+
+```yaml
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSet
+metadata:
+  name: flux-notifications
+  namespace: flux-system
+spec:
+  dependsOn:
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: alerts.notification.toolkit.fluxcd.io
+  resources:
+    - apiVersion: notification.toolkit.fluxcd.io/v1beta3
+      kind: Provider
+      metadata:
+        name: github-status
+        namespace: flux-system
+      spec:
+        type: github
+        address: https://github.com/stefanprodan/flux-fleet
+        secretRef:
+          name: github-auth     
+    - apiVersion: notification.toolkit.fluxcd.io/v1beta3
+      kind: Alert
+      metadata:
+        name: github-status
+        namespace: flux-system
+      spec:
+        providerRef:
+          name: github-status
+        eventSources:
+          - kind: Kustomization
+            name: flux-system
+```
+
+Commit and push the changes to the `flux-fleet` repository:
+
+```sh
+git add -A
+git commit -m "Add Flux Notifications"
+git push origin main
+```
+
+Wait for Flux to detect the change in Git or ask it to apply changes immediately:
+
+```sh
+flux reconcile kustomization flux-system --with-source
+```
+
+Now if we go to the GitHub repository, we should see a green check mark next to
+the last commit with the message "kustomization/flux-system reconciliation succeeded".
+
+> [!NOTE]
+> From now on, Flux will keep updating the commit status in GitHub every time
+> the Kustomization is reconciled, any errors will be reported as a red cross.
+>
+> Flux also supports sending notifications to other providers such as Slack, Discord, Teams, etc.
+> When using messaging providers, the alert posted to the channel will contain
+> details about which resources were created, deleted or modified and any errors that occurred.
