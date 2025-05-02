@@ -10,10 +10,10 @@ there is no need to run bootstrap again nor connect to the cluster.
 
 ## Cluster Installation
 
-Create a local Kubernetes cluster called `flux-dev` using KinD:
+Create a local Kubernetes cluster called `flux-staging` using KinD:
 
 ```sh
-kind create cluster --name flux-dev --wait 5m
+kind create cluster --name flux-staging --wait 5m
 ```
 
 Verify that the cluster is compatible with Flux:
@@ -42,13 +42,13 @@ git clone https//github.com/<your-username>/flux-fleet.git
 cd flux-fleet
 ```
 
-Create the directory structure for the dev cluster:
+Create the directory structure for the staging cluster:
 
 ```sh
-mkdir -p clusters/dev/flux-system
+mkdir -p clusters/staging/flux-system
 ```
 
-Create a `FluxInstance` in `clusters/dev/flux-system/flux-instance.yaml` with the following content:
+Create a `FluxInstance` in `clusters/staging/flux-system/flux-instance.yaml` with the following content:
 
 ```yaml
 apiVersion: fluxcd.controlplane.io/v1
@@ -76,7 +76,7 @@ spec:
     kind: GitRepository
     url: "https://github.com/stefanprodan/flux-fleet"
     ref: "refs/heads/main"
-    path: "clusters/dev"
+    path: "clusters/staging"
     pullSecret: "github-auth"
   kustomize:
     patches:
@@ -118,7 +118,7 @@ Make sure the `GITHUB_TOKEN` environment variable is set to your GitHub PAT.
 Apply the `FluxInstance` manifest to the cluster:
 
 ```sh
-kubectl apply -f clusters/dev/flux-system/flux-instance.yaml
+kubectl apply -f clusters/staging/flux-system/flux-instance.yaml
 ```
 
 Wait for the Flux Operator to reconcile the `FluxInstance` and start the Flux controllers:
@@ -143,7 +143,7 @@ kubectl -n flux-system get fluxreport flux -o yaml
 To identify the cluster where Flux is running, we are going to create a `ConfigMap`
 with the details about the cluster such as the environment, cluster name and domain.
 
-Create a `ConfigMap` in `clusters/dev/flux-system/flux-runtime-info.yaml` with the following content:
+Create a `ConfigMap` in `clusters/staging/flux-system/flux-runtime-info.yaml` with the following content:
 
 ```yaml
 apiVersion: v1
@@ -154,9 +154,9 @@ metadata:
   labels:
     toolkit.fluxcd.io/runtime: "true"
 data:
-  ENVIRONMENT: dev
-  CLUSTER_NAME: kind-flux-dev
-  CLUSTER_DOMAIN: dev.example.com
+  ENVIRONMENT: staging
+  CLUSTER_NAME: kind-flux-staging
+  CLUSTER_DOMAIN: staging.example.com
 ```
 
 Commit and push the changes to the `flux-fleet` repository:
@@ -169,7 +169,7 @@ git push origin main
 
 ## Automated Upgrades Configuration
 
-Create a `ResourceSet` in `clusters/dev/flux-system/flux-operator.yaml` with the following content:
+Create a `ResourceSet` in `clusters/staging/flux-system/flux-operator.yaml` with the following content:
 
 ```yaml
 apiVersion: fluxcd.controlplane.io/v1
@@ -247,7 +247,7 @@ flux get helmreleases
 To know when a change in Git has been reconciled on the cluster, Flux can be configured
 to update the status of the commit in GitHub.
 
-Create a Flux `Alert` and `Provider` in `clusters/dev/flux-system/flux-notifications.yaml` with the following content:
+Create a Flux `Alert` and `Provider` in `clusters/staging/flux-system/flux-notifications.yaml` with the following content:
 
 ```yaml
 apiVersion: fluxcd.controlplane.io/v1
