@@ -138,6 +138,35 @@ kubectl -n flux-system get fluxreport flux -o yaml
 > Any changes to the cluster should be done by creating, modifying or deleting Kubernetes
 > manifests in the Git repository.
 
+## Cluster Info Configuration
+
+To identify the cluster where Flux is running, we are going to create a `ConfigMap`
+with the details about the cluster such as the environment, cluster name and domain.
+
+Create a `ConfigMap` in `clusters/dev/flux-system/flux-runtime-info.yaml` with the following content:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flux-runtime-info
+  namespace: flux-system
+  labels:
+    toolkit.fluxcd.io/runtime: "true"
+data:
+  ENVIRONMENT: dev
+  CLUSTER_NAME: kind-flux-dev
+  CLUSTER_DOMAIN: dev.example.com
+```
+
+Commit and push the changes to the `flux-fleet` repository:
+
+```sh
+git add -A
+git commit -m "Add Flux runtime info"
+git push origin main
+```
+
 ## Automated Upgrades Configuration
 
 Create a `ResourceSet` in `clusters/dev/flux-system/flux-operator.yaml` with the following content:
