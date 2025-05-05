@@ -2,6 +2,8 @@
 
 [Cloud Native Days Romania](https://cloudnativedays.ro/) - **Applied GitOps with Flux Operator** Workshop
 
+Flux Operator - https://github.com/controlplaneio-fluxcd/flux-operator
+
 ## Prerequisites
 
 For this workshop, you will need a GitHub account and the ability
@@ -76,3 +78,31 @@ cd flux-fleet
 
 Open the repository in your favorite code editor and check that you can push changes to it by modifying the `README.md` file.
 We will use this repository to store the GitOps configuration for the workshop.
+
+## Workshop Agenda
+
+- [1. Staging cluster bootstrap](docs/1-bootstrap.md)
+- [2. Cluster add-ons delivery](docs/2-cluster-addons.md)
+- [3. Application delivery](docs/3-apps.md)
+- [4. Multi-cluster](docs/4-multi-cluster.md)
+
+
+## Further Reading
+
+This workshop demonstrated how to operate multi-tenant GitOps with Flux and GitRepository sources safely.
+However, in many regulated environments, direct cluster access to Git hosts is discouraged or prohibited.
+The D2 model introduces a secure, OCI-based alternative: Gitless GitOps.
+
+Signed OCI Artifacts, built during the CI process and stored in container registries,
+enable secure provenance and veracity checks:
+
+- Signature verification using Cosign and keyless signing
+- Rich metadata, including SBOMs and VEX documents
+- Workload identity authentication, removing the need for static secrets
+
+In short: In D2 we’ve decoupled source control from deployment control, while improving auditability and reducing risk.
+
+- [Flux D2 Reference Architecture](https://control-plane.io/posts/d2-reference-architecture-guide/)
+    - [d2-fleet](https://github.com/controlplaneio-fluxcd/d2-fleet) – Multi-cluster configuration repository
+    - [d2-infra](https://github.com/controlplaneio-fluxcd/d2-infra) – For shared infrastructure, such as monitoring and networking.
+    - [d2-apps](https://github.com/controlplaneio-fluxcd/d2-apps) – For application-specific configurations.
