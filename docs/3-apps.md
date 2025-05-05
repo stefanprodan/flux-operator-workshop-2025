@@ -134,3 +134,10 @@ Verify that the `ResourceSet` is applied and the apps are deployed:
 ```sh
 watch flux get all -A
 ```
+
+## Further Reading
+
+Self-service environments:
+
+- [Ephemeral Environments for GitHub Pull Requests](https://fluxcd.control-plane.io/operator/resourcesets/github-pull-requests/)
+- [Ephemeral Environments for GitLab Merge Requests](https://fluxcd.control-plane.io/operator/resourcesets/gitlab-merge-requests/)
