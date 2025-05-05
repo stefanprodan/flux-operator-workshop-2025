@@ -1,4 +1,4 @@
-# Apps Setup
+# Applications Delivery
 
 To manage the delivery of applications, we'll group the applications by namespace
 and define a set of Kustomize overlays for each environment (staging and production).

@@ -1,4 +1,4 @@
-# Cluster Addons Setup
+# Cluster Addons Delivery
 
 To manage the cluster add-ons, we'll define a set of Kustomize overlays for each
 environment (staging and production).
